@@ -121,6 +121,8 @@
         <ul style="display: flex; list-style: none; margin: 0; padding: 10px; justify-content: center;">
             <li style="margin: 0 15px;"><button onclick="showSection('home')">Principal</button></li>
             <li style="margin: 0 15px;"><button onclick="showSection('scan')">Cypher</button></li>
+            <li style="margin: 0 15px;"><button onclick="showSection('extract')">Extractor</button></li>
+
             <li style="margin: 0 15px;"><button onclick="showSection('about')">About</button></li>
         </ul>
     </nav>
@@ -153,6 +155,23 @@
             
             {% if result is not none %}
             <h2>✔️ Result of the process: {{ result }}</h2>
+        {% endif %}
+        </div> 
+        <div id="extract" class="section" style="display: none;">
+            <h1>Cypher</h1>
+             <form action="/extract_message"  method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; align-items: center;">
+                <input type="file" name="image" accept="image/*">   
+            <button  type="submit">Process Image</button>
+            </form>            
+            
+            {% if result is not none %}
+            <h2>✔️ Result of the process: {{ result }}</h2>
+        {% endif %}
+        {% if extracted_message %}
+            <div>
+                <h3>Mensaje oculto extraído:</h3>
+                <p>{{ extracted_message }}</p>
+            </div>
         {% endif %}
         </div> 
         <!-- Sección Sobre -->
