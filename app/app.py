@@ -1,8 +1,21 @@
 from flask import Flask, render_template, request, jsonify
 import joblib
 import os
-from attacks.cypher import stego
+import sys
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'attacks')))
+
+# Importar el módulo stego
+try:
+    from cypher import stego
+    print("Módulo stego importado correctamente")
+except ImportError as e:
+    print(f"Error al importar stego: {e}")
+    stego = None
+
+
 app = Flask(__name__)
+
 
 #model_filename = os.path.join(os.path.dirname(__file__), 'full.joblib')
 
@@ -42,6 +55,24 @@ def stego_img():
     result = stego.hide_message(file, text_tohidden, file_stego)    
     return render_template("index.html", result=result)   
     
+@app.route("/extract_message", methods=["POST"])
+def extract_stego():
+    if stego is None:
+        return "Stego module not available", 500
+
+    file = request.files["image"]
+    if not file:
+        return "No images uploaded", 400
+
+    file_path = os.path.join(os.path.dirname(__file__), 'uploaded_image.png')
+    file.save(file_path)
+
+    try:
+        mensaje = stego.extract_message(file_path)
+    except Exception as e:
+        return f"Error extracting message: {e}", 500
+
+    return render_template("index.html", extracted_message=mensaje)
 
 @app.route('/ping')
 def ping():
@@ -52,4 +83,3 @@ def ping():
 
 if __name__ == "__main__":
     app.run(debug=False)
-    
